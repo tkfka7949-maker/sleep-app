@@ -1,0 +1,19 @@
+name: SleepSnoreTracker
+options:
+  bundleIdPrefix: com.sleepsnore
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  SleepSnoreTracker:
+    type: application
+    platform: iOS
+    sources:
+      - SleepSnoreTrackerApp.swift
+    info:
+      path: Info.plist
+      properties:
+        UILaunchScreen: {}
+        NSMicrophoneUsageDescription: "수면 중 코골이 시간 및 호흡 패턴 분석을 위해 마이크 권한이 필요합니다."
+        NSHealthShareUsageDescription: "코골이 발생 시점의 수면 단계, 심박수, 혈중 산소포화도를 비교하기 위해 건강 데이터 읽기 권한이 필요합니다."
+        UIBackgroundModes:
+          - audio
