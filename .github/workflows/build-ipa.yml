@@ -1,0 +1,40 @@
+name: Build iOS IPA
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Normalize Swift filename and Generate Xcode Project
+        run: |
+          if [ -f "sleepsnoretrackerapp.swift" ]; then
+            mv sleepsnoretrackerapp.swift SleepSnoreTrackerApp.swift
+          fi
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Build Unsigned iOS App
+        run: |
+          xcodebuild -project SleepSnoreTracker.xcodeproj \
+            -scheme SleepSnoreTracker \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+      - name: Package into IPA file
+        run: |
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/SleepSnoreTracker.app Payload/
+          zip -r SleepSnoreTracker.ipa Payload
+
+      - name: Upload IPA File
+        uses: actions/upload-artifact@v4
+        with:
+          name: SleepSnoreTracker-IPA
+          path: SleepSnoreTracker.ipa
